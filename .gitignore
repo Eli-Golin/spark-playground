@@ -1,0 +1,13 @@
+.sbtopts
+
+### Scala ###
+/**/*.log
+
+# sbt specific
+lib/
+target/
+project/project/
+project/build.properties
+
+#IDEA
+.idea/
