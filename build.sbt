@@ -1,9 +1,9 @@
 
-import Dependencies._
+import Dependencies.Artifacts._
 lazy val commonSettings = Seq(
   scalaVersion := "2.11.8",
   organization := "com.clicktale.cec",
-  libraryDependencies += scalaTest
+  libraryDependencies ++= Seq(scalaTest,typeSafeConfig)
 )
 
 lazy val commonSparkSettings  = Seq(
