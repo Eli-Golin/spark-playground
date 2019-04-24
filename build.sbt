@@ -21,14 +21,16 @@ lazy val commonSparkSettings  = Seq(
   },
   libraryDependencies ++= Seq(
     sparkSql,
-    sparkSqlKafka
+    sparkSqlKafka,
+    xml
   )
 )
 
 lazy val cecUnifiedJob = (project in file("cec-unified-job")).settings(
   commonSettings,
   name := "cec-unified-job",
-  commonSparkSettings
+  commonSparkSettings,
+  libraryDependencies += json4s
 ).dependsOn(common)
 
 lazy val coreUnifiedJob = (project in file("core-unified-job")).settings(
