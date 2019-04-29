@@ -17,8 +17,8 @@ object Dependencies {
   object Artifacts {
     
     import Versioning._
-    lazy val sparkSql = "org.apache.spark" %% "spark-sql" % sparkV //% Provided
-    lazy val sparkSqlKafka = "org.apache.spark" %% "spark-sql-kafka-0-10" % sparkV// % Provided
+    lazy val sparkSql = "org.apache.spark" %% "spark-sql" % sparkV % Provided
+    lazy val sparkSqlKafka = "org.apache.spark" %% "spark-sql-kafka-0-10" % sparkV % Provided
     lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.0.5" % Test
     lazy val aws_emr = "com.amazonaws" % "aws-java-sdk-emr" % awsV % Test
     lazy val aws_s3 = "com.amazonaws" % "aws-java-sdk-s3" % awsV

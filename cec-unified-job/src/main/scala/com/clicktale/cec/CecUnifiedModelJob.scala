@@ -18,18 +18,15 @@ object CecUnifiedModelJob {
   implicit val formats = DefaultFormats
 
   def main(args:Array[String]): Unit = {
-    val sparkSession = SparkSession.builder.appName("job1.1").config("spark.master", "local[4]").getOrCreate()
+    val sparkSession = if(config.getBoolean("local"))
+                          SparkSession.builder.appName("job1.1").config("spark.master", "local[4]").getOrCreate()
+                      else
+                          SparkSession.builder.appName("job1.1").getOrCreate()
     val dataset = connectToKafkaSource(sparkSession)
     val logic = defineLogic(dataset,sparkSession)
     val kafkaToKafkaStream = connectToKafkaSink(logic)
     kafkaToKafkaStream.start().awaitTermination()
   }
-
-
-//  private def connectToConsoleSink(df:DataFrame) = {
-//    df.printSchema()
-//    df.writeStream.outputMode("append").format("console")
-//  }
 
   private def connectToKafkaSource(ss:SparkSession) = {
     import ss.implicits._
