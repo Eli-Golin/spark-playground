@@ -6,7 +6,7 @@ import com.clicktale.cec.model.{CecPageViewMessage, KafkaCecVisitMessage}
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.sql.functions.col
 import org.apache.spark.sql.types._
-import org.apache.spark.sql.{Dataset, DatasetHolder, SparkSession}
+import org.apache.spark.sql.{Dataset, SparkSession}
 import org.json4s._
 import org.json4s.native.JsonMethods._
 import org.json4s.native.Serialization
@@ -20,9 +20,11 @@ object CecUnifiedModelJob {
   def main(args:Array[String]): Unit = {
     val sparkSession = SparkSession.builder.appName("job1.1").config("spark.master", "local[4]").getOrCreate()
     val dataset = connectToKafkaSource(sparkSession)
+    val wiredToConsloleSink = connectToConsoleSink[String](dataset,Map("numRows" -> "100","truncate" -> "false"))
     val logic = defineLogic(dataset,sparkSession)
-    val kakfaToConsoleStream  = connectToConsoleSink(logic)
+    val kakfaToConsoleStream  = connectToConsoleSink[(String,String)](logic)
     val kafkaToKafkaStream = connectToKafkaSink(logic)
+    wiredToConsloleSink.start().awaitTermination()
     kakfaToConsoleStream.start().awaitTermination()
     kafkaToKafkaStream.start().awaitTermination()
   }
@@ -43,9 +45,9 @@ object CecUnifiedModelJob {
       load().select(col("value").cast(StringType)).as[String]
   }
 
-  private def connectToConsoleSink(ds:Dataset[(String,String)]) = {
+  private def connectToConsoleSink[A](ds:Dataset[A],options:Map[String,String] = Map.empty) = {
     ds.printSchema()
-    ds.writeStream.outputMode("append").format("console")
+    ds.writeStream.outputMode("append").options(options).format("console")
   }
 
   private def connectToKafkaSink(ds:Dataset[(String,String)]) = {
