@@ -20,12 +20,8 @@ object CecUnifiedModelJob {
   def main(args:Array[String]): Unit = {
     val sparkSession = SparkSession.builder.appName("job1.1").config("spark.master", "local[4]").getOrCreate()
     val dataset = connectToKafkaSource(sparkSession)
-    val wiredToConsloleSink = connectToConsoleSink[String](dataset,Map("numRows" -> "100","truncate" -> "false"))
     val logic = defineLogic(dataset,sparkSession)
-    val kakfaToConsoleStream  = connectToConsoleSink[(String,String)](logic)
     val kafkaToKafkaStream = connectToKafkaSink(logic)
-    wiredToConsloleSink.start().awaitTermination()
-    kakfaToConsoleStream.start().awaitTermination()
     kafkaToKafkaStream.start().awaitTermination()
   }
 
